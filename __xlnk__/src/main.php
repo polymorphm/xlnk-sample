@@ -21,11 +21,22 @@ use web_app as parent_ns;
 
 require_once dirname(__FILE__).'/gpc_request.php';
 
+# BEGIN: configuration
+
 function get_email_map () {
     return array(
             '28212' => 'polymorphm+superklukva+xlnk@gmail.com',
+            // ... ... ...
+            // ... ... ...
+            // ... ... ...
             );
 }
+
+function get_404_redirect_url () {
+    return 'https://github.com/__error_404__';
+}
+
+# END: configuration
 
 function plain_mail ($email, $subject, $msg) {
     return mail(
@@ -37,6 +48,11 @@ function plain_mail ($email, $subject, $msg) {
             );
 }
 
+function redirect ($url) {
+    header($_SERVER['SERVER_PROTOCOL'].' 303 See Other');
+    header('Location: '.$url);
+}
+
 function show_400_error () {
     header($_SERVER['SERVER_PROTOCOL'].' 400 Bad Request');
     header('Content-Type: text/plain;charset=utf-8');
@@ -45,10 +61,7 @@ function show_400_error () {
 }
 
 function show_404_error () {
-    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
-    header('Content-Type: text/plain;charset=utf-8');
-    
-    echo 'error: page not found';
+    redirect(get_404_redirect_url());
 }
 
 function main () {
@@ -73,9 +86,7 @@ function main () {
                 $msg = print_r($_SERVER, TRUE);
                 
                 plain_mail($email, $subject, $msg);
-                
-                header($_SERVER['SERVER_PROTOCOL'].' 303 See Other');
-                header('Location: '.$next_url);
+                redirect($next_url);
                 
                 return;
             }
