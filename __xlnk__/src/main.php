@@ -17,26 +17,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace web_app\main;
-use web_app as parent_ns;
+
+require_once dirname(__FILE__).'/config.php';
+use web_app\config;
 
 require_once dirname(__FILE__).'/gpc_request.php';
-
-# BEGIN: configuration
-
-function get_email_map () {
-    return array(
-            '28212' => 'polymorphm+superklukva+xlnk@gmail.com',
-            // ... ... ...
-            // ... ... ...
-            // ... ... ...
-            );
-}
-
-function get_404_redirect_url () {
-    return 'https://github.com/__error_404__';
-}
-
-# END: configuration
+use web_app\gpc_request;
 
 function plain_mail ($email, $subject, $msg) {
     return mail(
@@ -61,7 +47,7 @@ function show_400_error () {
 }
 
 function show_404_error () {
-    redirect(get_404_redirect_url());
+    redirect(config\get_404_redirect_url());
 }
 
 function main () {
@@ -71,10 +57,10 @@ function main () {
         $path = array_key_exists('REDIRECT_URL', $_SERVER)?
             $_SERVER['REDIRECT_URL']:'';
         
-        foreach (get_email_map() as $email_id => $email) {
+        foreach (config\get_email_map() as $email_id => $email) {
             if ($ENVIRON_ROOT.'/'.$email_id == $path) {
-                $label = parent_ns\gpc_request\get_request('label');
-                $next_url = parent_ns\gpc_request\get_request('next');
+                $label = gpc_request\get_request('label');
+                $next_url = gpc_request\get_request('next');
                 
                 if (!$label || !$next_url) {
                     show_400_error();
